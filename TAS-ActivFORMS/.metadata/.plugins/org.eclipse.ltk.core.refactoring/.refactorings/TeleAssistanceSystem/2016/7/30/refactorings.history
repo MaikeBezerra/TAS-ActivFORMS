@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete 4 elements from project &apos;TeleAssistanceSystem&apos;&#x0A;- Original project: &apos;TeleAssistanceSystem&apos;&#x0A;- Original elements:&#x0A;     activemq-all-5.10.0.jar&#x0A;     antlrworks-1.5.2-complete.jar&#x0A;     javax.jms-api-2.0.jar&#x0A;     xstream-1.5.0.jar" description="Delete elements" element1="libs/xstream-1.5.0.jar" element2="libs/javax.jms-api-2.0.jar" element3="libs/activemq-all-5.10.0.jar" element4="libs/antlrworks-1.5.2-complete.jar" elements="0" flags="589830" id="org.eclipse.jdt.ui.delete" resources="4" stamp="1469117841652" subPackages="false" version="1.0"/>
+</session>
