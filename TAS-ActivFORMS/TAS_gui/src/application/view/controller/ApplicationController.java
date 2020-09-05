@@ -34,7 +34,6 @@ import application.MainGui;
 import application.model.CostEntry;
 import application.model.PerformanceEntry;
 import application.model.ReliabilityEntry;
-import application.model.TimeEntry;
 import application.utility.FileManager;
 import application.utility.NodeVisitor;
 import application.view.LatencyChartView;
@@ -99,23 +98,21 @@ public class ApplicationController implements Initializable {
     // for generating kinds of charts
     ChartController chartController;
     
-    LatencyChartView latencyChartView;
-    
     // for generating kinds of table views
     TableViewController tableViewController;
+    
+    LatencyChartView latencyChart;
 
-    // the path of important files 
-    //String workflowPath = "src"+File.separator+"resources" + File.separator + "workflow_test1.txt";
+    String baseDir = "";
     
-    String baseDir="";
+    String workflowPath    = baseDir + "resources" + File.separator + "TeleAssistanceWorkflow.txt";
+    String profileDirPath  = baseDir + "resources" + File.separator + "files" + File.separator;
+    String resourceDirPath = baseDir + "resources" + File.separator;
     
-    String workflowPath = baseDir+"resources" + File.separator + "TeleAssistanceWorkflow.txt";
-    String resultFilePath = baseDir+"results" + File.separator + "result.csv";
-    String logFilePath=baseDir+"results" + File.separator + "log.csv";
+    String resultFilePath = baseDir + "results" + File.separator + "result.csv";
+    String logFilePath    = baseDir + "results" + File.separator + "log.csv";
+    String resultDirPath  = baseDir + "results" + File.separator;
     
-    String resourceDirPath=baseDir+"resources" + File.separator;
-    String resultDirPath=baseDir+"results" + File.separator;
-    String profileDirPath=baseDir+"resources" + File.separator + "files" + File.separator;
 
     ScheduledExecutorService scheduExec = Executors.newScheduledThreadPool(5);
 
@@ -128,7 +125,7 @@ public class ApplicationController implements Initializable {
     int maxSteps;
     String activeModel;
     Map<String, AdaptationEngine> adaptationEngines;
-    Map<String,AnchorPane> servicePanes=new ConcurrentHashMap<>();
+    Map<String, AnchorPane> servicePanes = new ConcurrentHashMap<>();
 
     @FXML
     ListView<AnchorPane> serviceListView;
@@ -148,9 +145,6 @@ public class ApplicationController implements Initializable {
     @FXML
     TableView<PerformanceEntry> performanceTableView;
     
-    @FXML
-    TableView<TimeEntry> timeTableView;
-
     @FXML
     MenuItem openWorkflowMenuItem;
 
@@ -204,7 +198,7 @@ public class ApplicationController implements Initializable {
 
     @FXML
     ScrollPane profileScrollPane;
-
+    
     @FXML
     MenuItem openRunMenuItem;
 
@@ -350,9 +344,9 @@ public class ApplicationController implements Initializable {
       	chartController = new ChartController(reliabilityChartPane, costChartPane,performanceChartPane
       			,invCostChartPane, avgReliabilityChartPane, avgCostChartPane, avgPerformanceChartPane
       			,invRateChartPane, tasStart.getServiceTypes());
-    	tableViewController = new TableViewController(reliabilityTableView,costTableView,performanceTableView, timeTableView);
+    	tableViewController = new TableViewController(reliabilityTableView,costTableView,performanceTableView);
     	
-    	latencyChartView = new LatencyChartView(latencyChartPane);
+    	this.latencyChart = new LatencyChartView(performanceChartPane);
     }
 
     private void addItems() {
@@ -537,7 +531,7 @@ public class ApplicationController implements Initializable {
 	    		    try {
 	    		    	Files.copy(Paths.get(resultFilePath), 
 	    		    				Paths.get(file.getPath() + ".csv"), 
-	    		    				StandardCopyOption.COPY_ATTRIBUTES);
+	    		    				StandardCopyOption.REPLACE_EXISTING);
 	    		    } catch (IOException e) {
 	    		    	e.printStackTrace();
 	    		    }
@@ -1113,27 +1107,20 @@ public class ApplicationController implements Initializable {
     				    Platform.runLater(new Runnable() {
         					@Override
         					public void run() {
-        					
-        						double startupTime = System.currentTimeMillis();
         						
         						circle.setFill(Color.GREEN);
         					    runButton.setId("runButton");
         						chartController.clear();
         						tableViewController.clear();
+        						latencyChart.clearData();
         						
         						chartController.generateCharts(resultFilePath, tasStart.getCurrentSteps());
         						chartController.generateAvgCharts(resultFilePath, tasStart.getCurrentSteps(),Integer.parseInt(sliceTextField.getText()));
-
+        						latencyChart.generateLatencyChart(resultFilePath, tasStart.getCurrentSteps());
+        						
         					    tableViewController.fillReliabilityDate(resultFilePath);
         					    tableViewController.fillCostData(resultFilePath);
         						tableViewController.fillPerformanceData(resultFilePath);
-        						
-        						double loadCostComponent = System.currentTimeMillis() - startupTime;
-        						
-        						
-        						tableViewController.addTimeEntry(new TimeEntry("Load cost of component", loadCostComponent));
-        						tableViewController.addTimeEntry(new TimeEntry("Startup time", startupTime));
-        						
         					}
         					
         					
@@ -1153,10 +1140,6 @@ public class ApplicationController implements Initializable {
     			Task<Void> progressTask = new Task<Void>() {
     			    @Override
     			    protected Void call() throws Exception {
-        				
-    			    	double progressInit = System.currentTimeMillis();;
-    			    	double shutdownTime = 0;
-    			    	
     			    	while (probe.workflowInvocationCount < maxSteps) {
         					Platform.runLater(new Runnable() {
             					@Override
@@ -1167,15 +1150,11 @@ public class ApplicationController implements Initializable {
         					updateProgress(probe.workflowInvocationCount, maxSteps);
         				    Thread.sleep(1000);   
     			    	}
-    			    	shutdownTime = (System.currentTimeMillis() - progressInit);
-    			    	tableViewController.addTimeEntry(new TimeEntry("Latency", shutdownTime));
-    			    	
-        				
+
     			    	Platform.runLater(new Runnable() {
         				    @Override
         				    public void run() {
         				    	invocationLabel.setText("" + maxSteps + " / " + maxSteps);
-        				    	tableViewController.fillTimeData();
         				    }
         				});
         				updateProgress(probe.workflowInvocationCount, maxSteps);        				
@@ -1199,12 +1178,13 @@ public class ApplicationController implements Initializable {
     			    circle.setFill(Color.GREEN);
     			    runButton.setId("runButton");
     				chartController.clear();
-    				latencyChartView.clearPane();
+    				latencyChart.clearData();
     				tableViewController.clear();
     				
     				chartController.generateCharts(resultFilePath, tasStart.getCurrentSteps());
     				chartController.generateAvgCharts(resultFilePath, tasStart.getCurrentSteps(),Integer.parseInt(sliceTextField.getText()));
-
+    				latencyChart.generateLatencyChart(resultFilePath, tasStart.getCurrentSteps());
+    				
     			    tableViewController.fillReliabilityDate(resultFilePath);
     			    tableViewController.fillCostData(resultFilePath);
     				tableViewController.fillPerformanceData(resultFilePath);

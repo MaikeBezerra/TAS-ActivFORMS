@@ -2,13 +2,9 @@ package tas.services.assistance;
 
 import java.util.HashMap;
 import java.util.Scanner;
-import service.auxiliary.CompositeServiceConfiguration;
+
 import service.auxiliary.LocalOperation;
 import service.composite.CompositeService;
-
-//@CompositeServiceConfiguration(
-//			Timeout = 0
-//)
 
 public class AssistanceService extends CompositeService {
 

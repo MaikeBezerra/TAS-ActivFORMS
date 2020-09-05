@@ -44,6 +44,7 @@ public class Log {
 		out.println(time + "," + title + "," + message);
 	}
 	
+	@SuppressWarnings("resource")
 	public static void clear(){
 		try{
 			File file = new File(logFile);

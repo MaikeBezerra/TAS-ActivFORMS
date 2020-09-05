@@ -5,7 +5,6 @@ import java.util.List;
 import service.auxiliary.Operation;
 import service.auxiliary.ServiceDescription;
 import service.composite.CompositeService;
-import service.composite.SDCache;
 
 /**
  * 

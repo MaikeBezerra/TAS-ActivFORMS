@@ -189,7 +189,7 @@ public class ServiceProfileController implements Initializable {
 		}
 	}
 	
-	
+	@SuppressWarnings("unchecked")
 	private void addServiceProfile(ServiceProfile profile, boolean enabled){
 		
 		AnchorPane itemPane = new AnchorPane();
@@ -281,7 +281,8 @@ public class ServiceProfileController implements Initializable {
 		invocationsColumn.setSortable(false);
 		invocationsColumn.setOnEditCommit(
                 new EventHandler<CellEditEvent<AttributeEntry, String>>() {
-                    @Override
+                    @SuppressWarnings("unchecked")
+					@Override
                     public void handle(CellEditEvent<AttributeEntry, String> t) {
                     	
                     	AttributeEntry attribute=(AttributeEntry) t.getTableView().getItems().get(
@@ -329,7 +330,8 @@ public class ServiceProfileController implements Initializable {
             
 		valueColumn.setOnEditCommit(
                 new EventHandler<CellEditEvent<AttributeEntry, String>>() {
-                    @Override
+                    @SuppressWarnings("unchecked")
+					@Override
                     public void handle(CellEditEvent<AttributeEntry, String> t) {
                     	AttributeEntry attribute=(AttributeEntry) t.getTableView().getItems().get(
                                 t.getTablePosition().getRow());
@@ -366,7 +368,8 @@ public class ServiceProfileController implements Initializable {
 		ContextMenu contextMenu = new ContextMenu();
 		MenuItem item = new MenuItem("Add new profile");
 		item.setOnAction(new EventHandler<ActionEvent>() {
-		    public void handle(ActionEvent e) {
+		    @SuppressWarnings("unchecked")
+			public void handle(ActionEvent e) {
 		    	
 				Dialog<Void> dialog = new Dialog<>();
 				dialog.setTitle("New Profile");

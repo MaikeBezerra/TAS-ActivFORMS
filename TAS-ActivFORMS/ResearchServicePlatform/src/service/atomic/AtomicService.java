@@ -12,7 +12,6 @@ import service.auxiliary.OperationAborted;
 import service.auxiliary.Param;
 import service.auxiliary.ServiceFailed;
 import service.auxiliary.ServiceOperation;
-import service.auxiliary.TimeOutError;
 
 /**
  *
@@ -76,7 +75,6 @@ public abstract class AtomicService extends AbstractService {
 
     @Override
     public Object invokeOperation(String opName, Param[] params) {
-		// System.out.println(opName);
 		for (Method operation : this.getClass().getMethods()) {
 			if (operation.getAnnotation(ServiceOperation.class) != null) {
 				try {
@@ -98,7 +96,6 @@ public abstract class AtomicService extends AbstractService {
 							for (int i = 0; i < serviceProfileNum; i++) {
 								if (!(flag = serviceProfiles.get(i).preInvokeOperation(opName, args))){
 									return new ServiceFailed();
-									//break;
 								}
 							}
 

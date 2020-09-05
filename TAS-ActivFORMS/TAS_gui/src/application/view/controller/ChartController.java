@@ -49,7 +49,7 @@ public class ChartController {
     protected LinkedHashMap<Integer,Double> responseTimes;
     protected LinkedHashMap<Integer,Double> costs;   
     protected LinkedHashMap<Integer,Map<String,Double>> invocationRates;
-   
+    
     public ChartController(AnchorPane reliabilityChartPane, AnchorPane costChartPane,
 			AnchorPane performanceChartPane, AnchorPane invCostChartPane,
 			AnchorPane avgReliabilityChartPane, AnchorPane avgCostChartPane, 
@@ -58,7 +58,6 @@ public class ChartController {
 		
 		this.reliabilityChartPane = reliabilityChartPane;
 		this.costChartPane = costChartPane;
-		this.performanceChartPane = performanceChartPane;
 		this.invCostChartPane = invCostChartPane;
 		
 		this.avgCostChartPane = avgCostChartPane;
@@ -73,7 +72,6 @@ public class ChartController {
 	public void generateCharts(String resultFilePath, int maxSteps){
 		this.generateCostChart(resultFilePath, maxSteps);
 		this.generateInvCostChart(resultFilePath, maxSteps);
-		this.generatePerformanceChart(resultFilePath, maxSteps);
 		this.generateReliabilityChart(resultFilePath, maxSteps);
 	}
 	
@@ -608,91 +606,10 @@ public class ChartController {
 		}
 	}
 		
-	private void generatePerformanceChart(String resultFilePath, int maxSteps){
-		try{
-				
-			CategoryAxis xAxis = new CategoryAxis();
-			xAxis.setLabel("Invocations");
-
-			NumberAxis yAxis = new NumberAxis();
-			yAxis.setLabel("Response Time / ms ");
-			
-	        performanceChart = new StackedBarChart<String,Number>(xAxis,yAxis);
-	        performanceChartPane.getChildren().add(performanceChart);
-	        performanceChart.prefWidthProperty().bind(performanceChartPane.widthProperty());
-	        performanceChart.prefHeightProperty().bind(performanceChartPane.heightProperty());
-			
-	        BufferedReader br = new BufferedReader(new FileReader(resultFilePath));
-			String line;
-			String invocationNum;
-			String service;
-			String invisible = new String();
-			int tickUnit = maxSteps/20;
-			
-			Map<String,XYChart.Series<String,Number>> delays=new LinkedHashMap<>();
-	        
-			while ((line = br.readLine()) != null) {
-				String[] str=line.split(",");
-				
-				if(str.length == 6){		
-					
-					if(maxSteps >= 100 && 
-							(Integer.parseInt(str[0]) % tickUnit != 0) && 
-							(Integer.parseInt(str[0])!= maxSteps)){
-						invisible += (char) 29;
-						invocationNum = invisible;
-					}
-					
-					else
-						invocationNum = str[0];
-						
-					service = str[1];
-					
-					if(!service.equals("AssistanceService")){
-						Double delay = Double.parseDouble(str[5]);
-						
-						if(!delays.containsKey(service)){
-							XYChart.Series<String,Number> delaySeries=new XYChart.Series<>();
-							delaySeries.setName(service);
-							delays.put(service, delaySeries);
-						}
-						
-						XYChart.Series<String,Number> delaySeries = delays.get(service);
-												
-						delaySeries.getData().add(new XYChart.Data<String,Number>(invocationNum, delay));
-					}
-				}
-			}
-			br.close();
-	             
-			performanceChart.setCategoryGap(performanceChart.widthProperty().divide(maxSteps*5).get());
-			
-	        List<String> categories = new ArrayList<>();
-	        invisible = new String();    
-	        	for(int i = 1; i <= maxSteps; i++){
-	        		if(maxSteps >= 100 
-	        				&& i % tickUnit !=0 
-	        				&& (i != maxSteps)){
-						invisible += (char)29;
-		        		categories.add(invisible);
-	        		} else {
-		        		categories.add(String.valueOf(i));
-	        		}
-	        	}
-
-	        xAxis.setCategories(FXCollections.<String>observableArrayList(categories)); 
-	        performanceChart.getData().addAll(delays.values());
-		}
-		catch(Exception e){
-			e.printStackTrace();
-		}
-	}
-	
 	
 	public void clear(){
 	    reliabilityChartPane.getChildren().clear();
 	    costChartPane.getChildren().clear();
-	    performanceChartPane.getChildren().clear();
 	    invCostChartPane.getChildren().clear();
 	}
 	

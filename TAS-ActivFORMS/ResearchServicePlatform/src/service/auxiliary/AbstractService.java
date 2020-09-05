@@ -1,7 +1,9 @@
 package service.auxiliary;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -13,7 +15,6 @@ import service.provider.MessageReceiver;
 import service.provider.ServiceProvider;
 import service.provider.ServiceProviderFactory;
 import service.utility.SimClock;
-import service.utility.Time;
 
 /**
  * 
@@ -22,7 +23,6 @@ import service.utility.Time;
  */
 public abstract class AbstractService implements MessageReceiver {
 
-    //private String serviceName;
     private String endpoint;
     private ServiceProvider serviceProvider;
 
@@ -40,10 +40,9 @@ public abstract class AbstractService implements MessageReceiver {
      * @param serviceEndpoint the service endpoint
      */
     public AbstractService(String serviceName, String serviceEndpoint) {
-		serviceProvider = ServiceProviderFactory.createServiceProvider();
-		//this.serviceName = serviceName;
+		this.serviceProvider = ServiceProviderFactory.createServiceProvider();
 		this.endpoint = serviceEndpoint;
-		description = new ServiceDescription(serviceName,serviceEndpoint);
+		this.description = new ServiceDescription(serviceName, serviceEndpoint);
 		createServiceDescription();
 		readConfiguration();
 		applyConfiguration();
@@ -57,7 +56,7 @@ public abstract class AbstractService implements MessageReceiver {
      */
     public AbstractService(String serviceName, String serviceEndpoint, int responseTime) {
     	this(serviceName, serviceEndpoint);
-    	description = new ServiceDescription(serviceName, serviceEndpoint, responseTime);
+    	this.description = new ServiceDescription(serviceName, serviceEndpoint, responseTime);
     }
 
     /**
@@ -99,13 +98,11 @@ public abstract class AbstractService implements MessageReceiver {
 							this.wait();
 						}
 					} else {
-						//long startTime = System.currentTimeMillis();
 						double startTime = SimClock.getCurrentTime();
 
 						while (!results.containsKey(messageID)) {
 							this.wait(responseTime);
-							//long endTime = System.currentTimeMillis();
-							double endTime= SimClock.getCurrentTime();
+							double endTime = SimClock.getCurrentTime();
 							if ((endTime - startTime) >= responseTime) {
 								results.put(messageID, new TimeOutError());
 							}
@@ -161,20 +158,17 @@ public abstract class AbstractService implements MessageReceiver {
 				if (DEBUG)
 					System.out.println("Receiving the request: \n" + msg.getId());
 				final Request request = (Request) msg;
+				Thread thread = Thread.currentThread();
 				
-				
-				/*
-				executors.submit(new Callable<Object>() {
-
+				FutureTask<Object> future = new FutureTask<Object>(new Callable<Object>() {
 					@Override
 					public Object call() throws Exception {
 						try {
 
 							Object result = invokeOperation(request.getOpName(), request.getParams());
 
-							if (result instanceof OperationAborted)
-								return null;
-							sendResponse(requestID, result, destination);
+							if (!(result instanceof OperationAborted))
+								sendResponse(requestID, result, destination);
 
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -182,34 +176,12 @@ public abstract class AbstractService implements MessageReceiver {
 
 						return null;
 					}
-				});*/
-				
-				
-				Thread thread=Thread.currentThread();
-				
-				 FutureTask<Object> future=new FutureTask<Object>(new Callable<Object>() {
-
-						@Override
-						public Object call() throws Exception {
-							try {
-
-								Object result = invokeOperation(request.getOpName(), request.getParams());
-
-								if (!(result instanceof OperationAborted))
-									sendResponse(requestID, result, destination);
-
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-
-							return null;
-						}
-					});
+				});
 				 
-				 if(thread instanceof ExecutionThread)		
-					 new ExecutionThread("AbstractService",future,((ExecutionThread)thread).getToken()).start();
-				 else
-					 new ExecutionThread("AbstractService",future).start();
+				if(thread instanceof ExecutionThread)		
+					new ExecutionThread("AbstractService",future,((ExecutionThread)thread).getToken()).start();
+				else
+					new ExecutionThread("AbstractService",future).start();
 				
 				break;
 			}
@@ -286,7 +258,6 @@ public abstract class AbstractService implements MessageReceiver {
     	this.description = serviceDescription;
     }
 
-    // ////////////////////////////////////////// Service Configuration //////////////////////////////////////////////////////
     protected Configuration configuration;
 
     /**

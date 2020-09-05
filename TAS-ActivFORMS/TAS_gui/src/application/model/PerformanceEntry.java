@@ -12,6 +12,7 @@ public class PerformanceEntry extends Entry{
     private SimpleIntegerProperty invocationNum;
     private SimpleIntegerProperty failNum;
     private SimpleDoubleProperty avgResponseTime;
+    private SimpleDoubleProperty latency;
    
     private double total = 0.0;
     
@@ -22,16 +23,22 @@ public class PerformanceEntry extends Entry{
     	this.invocationNum = new SimpleIntegerProperty(0);
     	this.failNum = new SimpleIntegerProperty(0);
     	this.avgResponseTime = new SimpleDoubleProperty(0);
+    	this.latency = new SimpleDoubleProperty(0);
     }
     
-    public PerformanceEntry(String service, int invocationNum, int failNum,double avgResponseTime){
+    public PerformanceEntry(String service, int invocationNum, int failNum,double avgResponseTime, double latency){
     	this.service = new SimpleStringProperty(service);
     	this.invocationNum = new SimpleIntegerProperty(invocationNum);
     	this.failNum = new SimpleIntegerProperty(failNum);
     	this.avgResponseTime = new SimpleDoubleProperty(avgResponseTime);
+    	this.latency = new SimpleDoubleProperty(latency);
     }
 
-    public void addResponseTime(double responseTime){
+    public double getLatency() {
+		return latency.get();
+	}
+
+	public void addResponseTime(double responseTime){
     	total += responseTime;
     }
     
@@ -72,4 +79,7 @@ public class PerformanceEntry extends Entry{
 		return avgResponseTime.get();
 	}
 
+	public void setLatency(double latency) {
+		this.latency = new SimpleDoubleProperty(latency);
+	}
 }

@@ -7,8 +7,6 @@ import javafx.scene.layout.AnchorPane;
 
 public class LineChartView {
 	
-	
-    
     private AnchorPane anchorPane;
     private LineChart<Number, Number> lineChart;
     

@@ -148,23 +148,23 @@
                                   <Tab text="Reliability">
                                     <content>
                                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                             <children>
-                                                <SplitPane dividerPositions="0.6" layoutX="85.0" layoutY="25.0" prefHeight="222.0" prefWidth="555.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                  <items>
-                                                      <AnchorPane>
-                                                         <children>
-                                                          <AnchorPane fx:id="reliabilityChartPane" minHeight="0.0" minWidth="0.0" prefHeight="220.0" prefWidth="291.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
-                                                         </children>
-                                                      </AnchorPane>
-                                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                                         <children>
-                                                            <TableView fx:id="reliabilityTableView" layoutX="-21.0" layoutY="-21.0" prefHeight="220.0" prefWidth="253.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                                         </children>
-                                                      </AnchorPane>
-                                                  </items>
-                                                </SplitPane>
-                                             </children>
-                                          </AnchorPane>
+                                          <children>
+                                             <SplitPane dividerPositions="0.6" layoutX="85.0" layoutY="25.0" prefHeight="222.0" prefWidth="555.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <items>
+                                                   <AnchorPane>
+                                                      <children>
+                                                         <AnchorPane fx:id="reliabilityChartPane" minHeight="0.0" minWidth="0.0" prefHeight="220.0" prefWidth="291.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                                                      </children>
+                                                   </AnchorPane>
+                                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                                      <children>
+                                                         <TableView fx:id="reliabilityTableView" layoutX="-21.0" layoutY="-21.0" prefHeight="220.0" prefWidth="253.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                      </children>
+                                                   </AnchorPane>
+                                                </items>
+                                             </SplitPane>
+                                          </children>
+                                       </AnchorPane>
                                     </content>
                                   </Tab>
                                     <Tab text="Performance">
@@ -244,24 +244,6 @@
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                              <children>
                                                 <AnchorPane fx:id="invRateChartPane" prefHeight="312.0" prefWidth="438.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                             </children>
-                                          </AnchorPane>
-                                      </content>
-                                    </Tab>
-                                    <Tab text="Test Rate">
-                                      <content>
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                             <children>
-                                                <SplitPane dividerPositions="0.6" layoutX="85.0" layoutY="25.0" prefHeight="222.0" prefWidth="555.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                  <items>
-                                                      <AnchorPane fx:id="latencyChartPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
-                                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                                         <children>
-                                                            <TableView fx:id="timeTableView" layoutX="-21.0" layoutY="-21.0" prefHeight="220.0" prefWidth="253.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                                         </children>
-                                                      </AnchorPane>
-                                                  </items>
-                                                </SplitPane>
                                              </children>
                                           </AnchorPane>
                                       </content>

@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,16 +27,14 @@ import tas.services.log.Log;
  */
 public class AssistanceServiceCostProbe implements WorkflowProbeInterface,CostProbeInterface{
 
-    //String costFilePath="cost.csv";
-    
     private static String resultFilePath="results"+File.separator+"result.csv";
-    //private static String resultFilePath="result.csv";
+    private static String resultsFilePath="results"+File.separator+"results.csv";
     private double totalCost=0;
     
     private StringBuilder resultBuilder;
     public int workflowInvocationCount = 0;
-    private Map<String,Double> delays=new HashMap<>();
-
+    private Map<String, Double> delays = new HashMap<>();
+    private Map<String, Double> latencies = new HashMap<>();
         
     static{
     	File file = new File(resultFilePath);
@@ -49,7 +49,9 @@ public class AssistanceServiceCostProbe implements WorkflowProbeInterface,CostPr
     		file.delete();
     	}
     	workflowInvocationCount=0;
-    	totalCost=0;
+    	totalCost = 0;
+    	delays = new HashMap<>();
+    	latencies = new HashMap<>();
     }
     
     /*
@@ -61,9 +63,9 @@ public class AssistanceServiceCostProbe implements WorkflowProbeInterface,CostPr
     public void workflowStarted(String qosRequirement, Object[] params) {
     	System.out.println("Probe: workflowStarted");
 	    Log.addLog("WorkflowStarted", "Workflow Started monitoring");
-    	resultBuilder=new StringBuilder();
+    	resultBuilder = new StringBuilder();
     	totalCost=0;
-    	workflowInvocationCount++;	    	
+    	workflowInvocationCount++;
     }
 
     /*
@@ -80,11 +82,9 @@ public class AssistanceServiceCostProbe implements WorkflowProbeInterface,CostPr
     	}
     	else
         	resultBuilder.append(workflowInvocationCount+","+"AssistanceService"+",true,"+totalCost+"\n");
-    	try(
-    		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(resultFilePath, true)))) {
-    	    out.println(resultBuilder.toString());
-    	}catch (IOException e) {
-    	}
+    	
+    	fileWriter(resultFilePath);
+    	fileWriter(resultsFilePath);
     }
 	
     /*
@@ -95,29 +95,47 @@ public class AssistanceServiceCostProbe implements WorkflowProbeInterface,CostPr
     @Override
     public void serviceOperationTimeout(ServiceDescription service, String opName, Object[] params) {
     	System.out.println("Probe: timeout");
-    	resultBuilder.append(workflowInvocationCount+","+service.getServiceName()+",false\n");
+    	
+    	String serviceName = service.getServiceName();
+    	Double begin = delays.get(serviceName);
+		Double end = SimClock.getCurrentTime();
+		Double latency = latencies.get(serviceName);
+    	resultBuilder.append(workflowInvocationCount+","+service.getServiceName()+
+    						",false, 0.0," + begin +  "," +(end-begin)+ 
+    						"," + latency +"\n");
     }
 
 	@Override
 	public void serviceCost(ServiceDescription service, String opName, double cost) {
-		// TODO Auto-generated method stub
-	    String serviceName = service.getServiceName();
+		String serviceName = service.getServiceName();
 		System.out.println("Serivice Cost: "+cost);
-		String fullOperation=serviceName+"."+opName;
-		Double begin=delays.get(fullOperation);
-		//Double end=(Double)(System.nanoTime()/1000000.000);
-		Double end=SimClock.getCurrentTime();
+		Double begin = delays.get(serviceName);
+		Double end = SimClock.getCurrentTime();
+		Double latency = latencies.get(serviceName);
 		
 		totalCost=totalCost+cost;
-    	resultBuilder.append(workflowInvocationCount+","+serviceName+",true,"+cost+","+begin+","+(end-begin)+"\n");
+    	
+		// Ivocation | service | Call sucess? | cost | startupTime | responseTime | latency
+		resultBuilder.append(workflowInvocationCount +"," + serviceName +
+    						",true," + cost + "," + begin +  "," +(end-begin)+ 
+    						"," + latency +"\n");
 	}
 
 	@Override
 	public void serviceOperationInvoked(ServiceDescription service,
 			String opName, Object[] params) {
-		// TODO Auto-generated method stub
-		//delays.put(service.getServiceName()+"."+opName, (Double)(System.nanoTime()/1000000.000));
-		delays.put(service.getServiceName()+"."+opName, SimClock.getCurrentTime());
+		
+		String serviceName = service.getServiceName();
+		double time = SimClock.getCurrentTime();
+		
+		
+		if (latencies.containsKey(serviceName) ) {
+			latencies.put(serviceName, time - delays.get(serviceName));
+		} else {
+			latencies.put(serviceName, time);
+		}
+		
+		delays.put(serviceName, time);
 	}
 
 	@Override
@@ -131,5 +149,26 @@ public class AssistanceServiceCostProbe implements WorkflowProbeInterface,CostPr
 	public void serviceNotFound(String serviceType, String opName) {
 	    // TODO Auto-generated method stub
 	    
+	}
+	
+	public void setDateNowInResult() {
+		
+    	SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();  
+		
+		resultBuilder = new StringBuilder();
+		resultBuilder.append("Date,"+ dataFormat.format(date).toString() + "\n");
+		
+		fileWriter(resultFilePath);
+    	fileWriter(resultsFilePath);
+	}
+	
+	private void fileWriter(String path) {
+		try(
+    		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true)))) {
+    	    out.println(resultBuilder.toString());
+    	}catch (IOException e) {
+    		e.printStackTrace();
+    	}
 	}
 }

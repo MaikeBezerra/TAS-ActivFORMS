@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import service.auxiliary.Operation;
 import service.auxiliary.ServiceDescription;
-import service.utility.Time;
 
 /**
  * Cache for available services

@@ -2,7 +2,10 @@ package application.view.service;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import application.model.PerformanceEntry;
@@ -15,13 +18,19 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 public class PerformanceTableService {
 	
-	private TableView<PerformanceEntry> performanceTable;
+	private TableView<PerformanceEntry> table;
 	
-	private ObservableList<PerformanceEntry> performanceData 
+	private ObservableList<PerformanceEntry> data 
 				= FXCollections.observableArrayList();
 	
+	private Map<String,PerformanceEntry> entries;
+		
+	private Map<String, List<Double>> latencies;
+	
 	public PerformanceTableService(TableView<PerformanceEntry> performanceTableView) {
-		this.performanceTable = performanceTableView;
+		this.table = performanceTableView;
+		this.entries = new HashMap<>();
+		this.latencies = new HashMap<>();	
 		
 		this.createHeaderTable();
 	}
@@ -31,7 +40,7 @@ public class PerformanceTableService {
 				new TableColumn<PerformanceEntry, String>(TablesUtil.SERVICE);
 		columnService.setCellValueFactory(
 				new PropertyValueFactory<PerformanceEntry, String>(TablesUtil.PROPERTY_SERVICE));
-		columnService.prefWidthProperty().bind(performanceTable.widthProperty()
+		columnService.prefWidthProperty().bind(table.widthProperty()
 				.divide(TablesUtil.DIVIDE_SMALL)
 				.multiply(TablesUtil.MULTIPLY_SMALL));
 		
@@ -41,21 +50,23 @@ public class PerformanceTableService {
 				generateColumnIntegerPerformanceEntry(TablesUtil.FAIL, TablesUtil.PROPERTY_FAIL);
 		TableColumn<PerformanceEntry,Double> columnResponse = 
 				generateColumnDoublePerformanceEntry(TablesUtil.AVG_RESPONSE_TIME, TablesUtil.PROPERTY_AVG_RESPONSE_TIME);
-
-		performanceTable.setItems(performanceData);
-		performanceTable.getColumns().add(columnService);
-		performanceTable.getColumns().add(columnInvocation);
-		performanceTable.getColumns().add(columnFail);
-		performanceTable.getColumns().add(columnResponse);
+		TableColumn<PerformanceEntry,Double> columnLatency = 
+				generateColumnDoublePerformanceEntry("Latency", "latency");
+		
+		table.setItems(data);
+		table.getColumns().add(columnService);
+		table.getColumns().add(columnInvocation);
+		table.getColumns().add(columnFail);
+		table.getColumns().add(columnResponse);
+		table.getColumns().add(columnLatency);
 	}
 	
 	public void clearData() {
-		this.performanceData.clear();
+		this.data.clear();
+		this.entries.clear();
 	}
 	
 	public void fillPerformanceData(String resultFilePath){
-		
-		Map<String,PerformanceEntry> performanceEntries=new HashMap<>();
 		
 		try{
 			BufferedReader br = new BufferedReader(new FileReader(resultFilePath));
@@ -63,33 +74,32 @@ public class PerformanceTableService {
 			String service;
 			boolean result;
 			
-			double maxResponseTime = 0;
-			
 			while ((line = br.readLine()) != null) {
 				
 				String[] str=line.split(",");
 				
 				if(str.length>=3){					
 					service=str[1];
-					result=Boolean.parseBoolean(str[2]);					
+					result = Boolean.parseBoolean(str[2]);					
 					
 					if(!service.equals("AssistanceService")){
 						
-						if(!performanceEntries.containsKey(service)){
-							performanceEntries.put(service, new PerformanceEntry(service));
+						if(!entries.containsKey(service)){
+							entries.put(service, new PerformanceEntry(service));
+							latencies.put(service, new ArrayList<Double>());
 						}
-						PerformanceEntry performanceEntry=performanceEntries.get(service);
-
+						
+						PerformanceEntry performanceEntry = entries.get(service);
+						latencies.get(service).add(Double.parseDouble(str[6]));
+						
 						performanceEntry.setInvocationNum(performanceEntry.getInvocationNum()+1);
 						
 						if(result) {
 							performanceEntry.addResponseTime(Double.parseDouble(str[5]));
-							if(maxResponseTime < Double.parseDouble(str[5])) {
-								maxResponseTime = Double.parseDouble(str[5]);
-							}
 						}	
 						else
 							performanceEntry.setFailNum(performanceEntry.getFailNum()+1);
+						
 					}			
 				}
 			}
@@ -97,9 +107,23 @@ public class PerformanceTableService {
 			
 			//addTimeEntry(new TimeEntry("Frame processing time", maxResponseTime));
 			
-			for (PerformanceEntry entry : performanceEntries.values()) {
+			for (PerformanceEntry entry : entries.values()) {
+				if (latencies.containsKey(entry.getService())) {
+					Collections.sort(latencies.get(entry.getService()));
+					double latency;
+					if (latencies.get(entry.getService()).size() % 2 == 0) {
+						int i = (int) ((latencies.get(entry.getService()).size() / 2) + 0.5);
+						latency = (latencies.get(entry.getService()).get(i) +
+								latencies.get(entry.getService()).get(i - 1)) / 2;
+						
+					} else { 
+						int i = latencies.get(entry.getService()).size() / 2;
+						latency = latencies.get(entry.getService()).get(i) / 2;
+					}
+					entry.setLatency(latency);
+				}
 				entry.setAvgResponseTime();
-				performanceData.add(entry);
+				data.add(entry);
 			}
 		}
 		catch(Exception e){
@@ -111,14 +135,14 @@ public class PerformanceTableService {
 	private TableColumn<PerformanceEntry, Integer> generateColumnIntegerPerformanceEntry(String columnName, String columnProperty) {
 		TableColumn<PerformanceEntry, Integer> column = new TableColumn<PerformanceEntry, Integer>(columnName);
 		column.setCellValueFactory(new PropertyValueFactory<PerformanceEntry, Integer>(columnProperty));
-		column.prefWidthProperty().bind(performanceTable.widthProperty().divide(TablesUtil.DIVIDE_SMALL));
+		column.prefWidthProperty().bind(table.widthProperty().divide(TablesUtil.DIVIDE_SMALL));
 		return column;
 	}
 	
 	private TableColumn<PerformanceEntry, Double> generateColumnDoublePerformanceEntry(String columnName, String columnProperty) {
 		TableColumn<PerformanceEntry, Double> column = new TableColumn<PerformanceEntry, Double>(columnName);
 		column.setCellValueFactory(new PropertyValueFactory<PerformanceEntry, Double>(columnProperty));
-		column.prefWidthProperty().bind(performanceTable.widthProperty().divide(TablesUtil.DIVIDE_MEDIUM));
+		column.prefWidthProperty().bind(table.widthProperty().divide(TablesUtil.DIVIDE_SMALL));
 		return column;
 	}
 }

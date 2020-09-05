@@ -17,7 +17,6 @@ public class CostProbe extends AbstractProbe<CostProbeInterface> {
      */
     public void notifyCostSubscribers(ServiceDescription description, String opName){
     	double cost=description.getOperationCost(opName);
-    	//String serviceName=description.getServiceName();
     	for (CostProbeInterface subscriber : subscribers) {
     		subscriber.serviceCost(description, opName, cost);
     	}

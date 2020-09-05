@@ -1,9 +1,8 @@
 package service.client;
 
 import service.auxiliary.AbstractMessage;
-import service.auxiliary.ExecutionThread;
-import service.auxiliary.Response;
 import service.auxiliary.Request;
+import service.auxiliary.Response;
 import service.provider.MessageReceiver;
 import service.provider.ServiceProvider;
 import service.provider.ServiceProviderFactory;

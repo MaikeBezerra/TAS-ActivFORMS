@@ -193,6 +193,18 @@ public class ReliabilityEntry {
 
 	}
 	
+	public void calcularRecuperabilidade() {
+		
+		int totalFalhasAdpt = Probe.falhasAdaptacaoNaoToleradas + Probe.falhasAdaptacaoToleradas;
+		
+		System.err.println("CONTADOR DE FALHAS DE ADAPTAÇÃO RECUPERADAS :  " + Probe.countRecovery);
+		System.err.println("CONTADOR DE TODAS AS FALHAS DE ADAPTAÇÃO:  " + totalFalhasAdpt);
+		
+		// calcula a taxa de recupera��o de adapta��es
+		Recoverability.adaptationFailureRecoveryRate(Probe.countRecovery, totalFalhasAdpt);
+		Recoverability.operatingDisasterRecoveryRate(0, getTotalFalhas());	
+	}
+	
 	//mean time between failures (OK)
 	public static void mtbf() {
 		
@@ -222,18 +234,6 @@ public class ReliabilityEntry {
 		} else {
 			System.err.println("Nenhuma falha foi recuperada");
 		}	
-	}
-	
-	public void calcularRecuperabilidade() {
-		
-		int totalFalhasAdpt = Probe.falhasAdaptacaoNaoToleradas + Probe.falhasAdaptacaoToleradas;
-		
-		System.err.println("CONTADOR DE FALHAS DE ADAPTAÇÃO RECUPERADAS :  " + Probe.countRecovery);
-		System.err.println("CONTADOR DE TODAS AS FALHAS DE ADAPTAÇÃO:  " + totalFalhasAdpt);
-		
-		// calcula a taxa de recupera��o de adapta��es
-		Recoverability.adaptationFailureRecoveryRate(Probe.countRecovery, totalFalhasAdpt);
-		Recoverability.operatingDisasterRecoveryRate(0, getTotalFalhas());	
 	}
 			
 	public static void meanRecovery() {

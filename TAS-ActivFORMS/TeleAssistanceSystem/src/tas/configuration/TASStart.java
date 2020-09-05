@@ -30,7 +30,6 @@ import tas.services.qos.ReliabilityQoS;
 
 public class TASStart {
 	
-	
     public static HashMap<String, AdaptationEngine> adaptationEngines = new LinkedHashMap<>();
 
     protected ServiceRegistry serviceRegistry;
@@ -59,10 +58,12 @@ public class TASStart {
     
     public synchronized void stop(){	
     	isStopped = true;
+    	monitor.setDateNowInResult();
     }
     
     private synchronized void start(){
     	isStopped = false;
+    	monitor.setDateNowInResult();
     }
     
     public synchronized void pause(){
@@ -113,9 +114,7 @@ public class TASStart {
     public TASStart() {
 	
 		initializeTAS();
-	
-		//adaptationEngines.put("Simple Adaptation", new ExampleScenario(assistanceService));
-		
+
 		adaptationEngines.put("No Adaptation", new DefaultAdaptationEngine());
 		adaptationEngines.put("Model Adaptation", new ModelAdaptationEngine(assistanceService));
 		adaptationEngines.put("Model Evolution", new ModelEvolutionEngine(assistanceService));
@@ -176,6 +175,7 @@ public class TASStart {
 		assistanceService.register();
 		
 		monitor = new AssistanceServiceCostProbe();
+		//monitor.setDateNowInResult();
 		assistanceService.getCostProbe().register(monitor);
 		assistanceService.getWorkflowProbe().register(monitor);
 		assistanceService.addQosRequirement("ReliabilityQoS", new ReliabilityQoS());
@@ -188,7 +188,6 @@ public class TASStart {
 		
 		this.serviceProfileClasses.add(ServiceFailureProfile.class);
 		this.serviceProfileClasses.add(ServiceDelayProfile.class);
-	
     }
     
     public void addAllServices(AtomicService... services){
@@ -281,4 +280,5 @@ public class TASStart {
     	service.startService();
 		service.register();
     }
+   
 }

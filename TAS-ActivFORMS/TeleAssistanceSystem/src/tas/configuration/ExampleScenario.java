@@ -18,21 +18,22 @@ public class ExampleScenario implements AdaptationEngine {
     MyProbe myProbe;
     WorkflowEffector myEffector;
     AssistanceService assistanceService;
-
+    MyAdaptationEngine myAdaptationEngine;
+   
     public ExampleScenario(AssistanceService assistanceService) {
-	this.assistanceService = assistanceService;
-	myProbe = new MyProbe();
-	myEffector = new WorkflowEffector(assistanceService);
-	MyAdaptationEngine myAdaptationEngine = new MyAdaptationEngine(myProbe, myEffector);
+		this.assistanceService = assistanceService;
+		this.myProbe = new MyProbe();
+		this.myEffector = new WorkflowEffector(assistanceService);
+		this.myAdaptationEngine = new MyAdaptationEngine(myProbe, myEffector);
     }
 
     @Override
     public void start() {
-	assistanceService.getWorkflowProbe().register(myProbe);
-	myEffector.refreshAllServices();
+		assistanceService.getWorkflowProbe().register(myProbe);
+		myEffector.refreshAllServices();
     }
     @Override
     public void stop() {
-	assistanceService.getWorkflowProbe().unRegister(myProbe);
+    	assistanceService.getWorkflowProbe().unRegister(myProbe);
     }
 }
