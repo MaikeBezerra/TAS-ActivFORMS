@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry combineaccessrules="false" kind="src" path="/ResearchServicePlatform"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/ResearchServicePlatform"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_261">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_271">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/TeleAssistanceSystem"/>
-	<classpathentry kind="lib" path="/home/maike/workspace/TAS-ActivFORMS/TAS-ActivFORMS/TAS_gui/libs/ActivFORMSv2.7.jar"/>
-	<classpathentry kind="lib" path="/home/maike/workspace/TAS-ActivFORMS/TAS-ActivFORMS/TAS_gui/libs/antlrworks-1.5.2-complete.jar"/>
-	<classpathentry kind="lib" path="/home/maike/workspace/TAS-ActivFORMS/TAS-ActivFORMS/TAS_gui/libs/CATALYSISV1.1.jar"/>
-	<classpathentry kind="lib" path="/home/maike/workspace/TAS-ActivFORMS/TAS-ActivFORMS/TAS_gui/libs/itextpdf-5.5.5.jar"/>
-	<classpathentry kind="lib" path="/home/maike/workspace/TAS-ActivFORMS/TAS-ActivFORMS/TAS_gui/libs/itext-pdfa-5.5.5.jar"/>
-	<classpathentry kind="lib" path="/home/maike/workspace/TAS-ActivFORMS/TAS-ActivFORMS/TAS_gui/libs/itext-xtra-5.5.5.jar"/>
-	<classpathentry kind="lib" path="/home/maike/workspace/TAS-ActivFORMS/TAS-ActivFORMS/TAS_gui/libs/javax.jms-api-2.0.jar"/>
-	<classpathentry kind="lib" path="/home/maike/workspace/TAS-ActivFORMS/TAS-ActivFORMS/TAS_gui/libs/jfxrt.jar"/>
-	<classpathentry kind="lib" path="/home/maike/workspace/TAS-ActivFORMS/TAS-ActivFORMS/TAS_gui/libs/xstream-1.5.0.jar"/>
-	<classpathentry kind="lib" path="/home/maike/workspace/performance-metrics/metricas.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/TeleAssistanceSystem"/>
+	<classpathentry exported="true" kind="lib" path="libs/ActivFORMSv2.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/antlrworks-1.5.2-complete.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/CATALYSISV1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/itextpdf-5.5.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/itext-pdfa-5.5.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/itext-xtra-5.5.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/javax.jms-api-2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jfxrt.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/xstream-1.5.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

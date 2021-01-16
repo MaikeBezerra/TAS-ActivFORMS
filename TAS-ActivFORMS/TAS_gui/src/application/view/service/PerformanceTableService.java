@@ -25,7 +25,7 @@ public class PerformanceTableService {
 	
 	private Map<String,PerformanceEntry> entries;
 		
-	private Map<String, List<Double>> latencies;
+	private Map<String,List<Double>> latencies;
 	
 	public PerformanceTableService(TableView<PerformanceEntry> performanceTableView) {
 		this.table = performanceTableView;
@@ -52,13 +52,22 @@ public class PerformanceTableService {
 				generateColumnDoublePerformanceEntry(TablesUtil.AVG_RESPONSE_TIME, TablesUtil.PROPERTY_AVG_RESPONSE_TIME);
 		TableColumn<PerformanceEntry,Double> columnLatency = 
 				generateColumnDoublePerformanceEntry("Latency", "latency");
+		TableColumn<PerformanceEntry,Double> columnTroughput = 
+				generateColumnDoublePerformanceEntry("Throughput", "throughput");
+		TableColumn<PerformanceEntry,Double> columnQuerySuccessRate = 
+				generateColumnDoublePerformanceEntry("QuerySuccessRates", "querySuccessRates");
+		TableColumn<PerformanceEntry,Double> columnQueryDelay = 
+				generateColumnDoublePerformanceEntry("QueryDelay", "queryDelay");
 		
 		table.setItems(data);
 		table.getColumns().add(columnService);
-		table.getColumns().add(columnInvocation);
+		table.getColumns().add(columnInvocation);	
 		table.getColumns().add(columnFail);
 		table.getColumns().add(columnResponse);
 		table.getColumns().add(columnLatency);
+		table.getColumns().add(columnTroughput);
+		table.getColumns().add(columnQuerySuccessRate);
+		table.getColumns().add(columnQueryDelay);
 	}
 	
 	public void clearData() {
@@ -104,10 +113,10 @@ public class PerformanceTableService {
 				}
 			}
 			br.close();	
-			
-			//addTimeEntry(new TimeEntry("Frame processing time", maxResponseTime));
-			
+				
 			for (PerformanceEntry entry : entries.values()) {
+				
+				
 				if (latencies.containsKey(entry.getService())) {
 					Collections.sort(latencies.get(entry.getService()));
 					double latency;
@@ -123,6 +132,15 @@ public class PerformanceTableService {
 					entry.setLatency(latency);
 				}
 				entry.setAvgResponseTime();
+				
+				final double executionTime = (entry.getAvgResponseTime() * entry.getInvocationNum()) / 1000;
+				final double invocations = entry.getInvocationNum();
+				final double invocationSuccess = invocations - entry.getFailNum();
+				
+				entry.setThroughput(invocationSuccess / executionTime);
+				entry.setQuerySuccessRates(entry.getInvocationNum() / executionTime);
+				entry.setQueryDelay(entry.getFailNum() / invocations);
+				
 				data.add(entry);
 			}
 		}
